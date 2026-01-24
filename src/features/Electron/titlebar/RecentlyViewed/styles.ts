@@ -31,6 +31,8 @@ export const useStyles = createStaticStyles(({ css, cssVar }) => ({
     color: ${cssVar.colorTextSecondary};
   `,
   item: css`
+    cursor: default;
+
     overflow: hidden;
     flex-shrink: 0;
 
@@ -47,6 +49,13 @@ export const useStyles = createStaticStyles(({ css, cssVar }) => ({
     &:hover .actionIcon {
       color: ${cssVar.colorText};
       opacity: 1;
+    }
+  `,
+  itemActive: css`
+    background-color: ${cssVar.colorFillTertiary};
+
+    &:hover {
+      background-color: ${cssVar.colorFillSecondary};
     }
   `,
   itemHovered: css`
@@ -68,7 +77,7 @@ export const useStyles = createStaticStyles(({ css, cssVar }) => ({
     font-size: 11px;
     font-weight: 500;
     color: ${cssVar.colorTextTertiary};
-    text-transform: uppercase;
+    text-transform: capitalize;
     letter-spacing: 0.5px;
   `,
 }));

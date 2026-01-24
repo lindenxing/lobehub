@@ -5,29 +5,31 @@ import { cx } from 'antd-style';
 import { Pin, PinOff } from 'lucide-react';
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { useElectronStore } from '@/store/electron';
-import type { PageEntry } from '@/store/electron/actions/recentPages';
 
-import { getRouteIcon } from '../../navigation/routeMetadata';
 import { useStyles } from './styles';
+import { type ResolvedPageData } from './types';
 
 interface PageItemProps {
   isPinned: boolean;
-  item: PageEntry;
+  item: ResolvedPageData;
   onClose: () => void;
 }
 
 const PageItem = memo<PageItemProps>(({ item, isPinned, onClose }) => {
   const { t } = useTranslation('electron');
   const navigate = useNavigate();
+  const location = useLocation();
   const styles = useStyles;
 
   const pinPage = useElectronStore((s) => s.pinPage);
   const unpinPage = useElectronStore((s) => s.unpinPage);
 
-  const RouteIcon = getRouteIcon(item.url);
+  // Check if this item matches the current route
+  const currentUrl = location.pathname + location.search;
+  const isActive = item.url === currentUrl || item.url === currentUrl.replace(/\/+$/, '');
 
   const handleClick = () => {
     navigate(item.url);
@@ -37,15 +39,21 @@ const PageItem = memo<PageItemProps>(({ item, isPinned, onClose }) => {
   const handlePinToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isPinned) {
-      unpinPage(item.url);
+      unpinPage(item.reference.id);
     } else {
-      pinPage({ title: item.title, url: item.url });
+      pinPage(item.reference);
     }
   };
 
   return (
-    <Flexbox align="center" className={styles.item} gap={8} horizontal onClick={handleClick}>
-      {RouteIcon && <Icon className={styles.icon} icon={RouteIcon} size="small" />}
+    <Flexbox
+      align="center"
+      className={cx(styles.item, isActive && styles.itemActive)}
+      gap={8}
+      horizontal
+      onClick={handleClick}
+    >
+      {item.icon && <Icon className={styles.icon} icon={item.icon} size="small" />}
       <span className={styles.itemTitle}>{item.title}</span>
       <ActionIcon
         className={cx('actionIcon', styles.actionIcon)}

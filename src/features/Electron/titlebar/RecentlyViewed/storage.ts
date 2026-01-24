@@ -1,11 +1,11 @@
-import type { PageEntry } from '@/store/electron/actions/recentPages';
+import { type PageReference } from './types';
 
-export const PINNED_PAGES_STORAGE_KEY = 'lobechat:desktop:pinned-pages:v1';
+export const PINNED_PAGES_STORAGE_KEY = 'lobechat:desktop:pinned-pages:v2';
 
 /**
  * Get pinned pages from localStorage
  */
-export const getPinnedPages = (): PageEntry[] => {
+export const getPinnedPages = (): PageReference[] => {
   if (typeof window === 'undefined') return [];
 
   try {
@@ -15,7 +15,16 @@ export const getPinnedPages = (): PageEntry[] => {
     const parsed = JSON.parse(data);
     if (!Array.isArray(parsed)) return [];
 
-    return parsed;
+    // Validate each entry has required fields
+    return parsed.filter(
+      (item): item is PageReference =>
+        item &&
+        typeof item === 'object' &&
+        typeof item.id === 'string' &&
+        typeof item.type === 'string' &&
+        typeof item.lastVisited === 'number' &&
+        item.params !== undefined,
+    );
   } catch {
     return [];
   }
@@ -24,7 +33,7 @@ export const getPinnedPages = (): PageEntry[] => {
 /**
  * Save pinned pages to localStorage
  */
-export const savePinnedPages = (pages: PageEntry[]): boolean => {
+export const savePinnedPages = (pages: PageReference[]): boolean => {
   if (typeof window === 'undefined') return false;
 
   try {

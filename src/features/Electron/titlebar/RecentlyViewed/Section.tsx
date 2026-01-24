@@ -2,14 +2,13 @@
 
 import { memo } from 'react';
 
-import type { PageEntry } from '@/store/electron/actions/recentPages';
-
 import PageItem from './PageItem';
 import { useStyles } from './styles';
+import { type ResolvedPageData } from './types';
 
 interface SectionProps {
   isPinned: boolean;
-  items: PageEntry[];
+  items: ResolvedPageData[];
   onClose: () => void;
   title: string;
 }
@@ -23,7 +22,7 @@ const Section = memo<SectionProps>(({ title, items, isPinned, onClose }) => {
     <>
       <div className={styles.title}>{title}</div>
       {items.map((item) => (
-        <PageItem isPinned={isPinned} item={item} key={item.url} onClose={onClose} />
+        <PageItem isPinned={isPinned} item={item} key={item.reference.id} onClose={onClose} />
       ))}
     </>
   );

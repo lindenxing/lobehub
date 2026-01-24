@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useElectronStore } from '@/store/electron';
 
 import Section from './Section';
+import { useResolvedPages } from './hooks/useResolvedPages';
 import { useStyles } from './styles';
 
 interface RecentlyViewedProps {
@@ -17,11 +18,10 @@ const RecentlyViewed = memo<RecentlyViewedProps>(({ onClose }) => {
   const { t } = useTranslation('electron');
   const styles = useStyles;
 
-  const pinnedPages = useElectronStore((s) => s.pinnedPages);
-  const recentPages = useElectronStore((s) => s.recentPages);
   const loadPinnedPages = useElectronStore((s) => s.loadPinnedPages);
 
-  // Load pinned pages from localStorage on mount
+  const { pinnedPages, recentPages } = useResolvedPages();
+
   useEffect(() => {
     loadPinnedPages();
   }, [loadPinnedPages]);
